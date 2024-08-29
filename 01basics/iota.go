@@ -1,3 +1,6 @@
+//go:generate stringer -type=CarOption
+//go:generate stringer -type=MyEnum
+
 package basics
 
 type MyEnum int
