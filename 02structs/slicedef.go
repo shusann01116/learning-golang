@@ -1,6 +1,9 @@
 package structs
 
-import "time"
+import (
+	"slices"
+	"time"
+)
 
 // コンシューマ型
 type Consumer struct {
@@ -12,9 +15,13 @@ type Consumer struct {
 // Slice に対して型を定義する
 type Consumers []Consumer
 
+func (c Consumers) RequiredFollows() Consumers {
+	return c.activeConsumer().expires(time.Now().AddDate(0, 0, 10)).sortByExpiredAt()
+}
+
 // 定義した型に対して Func を定義することでロジックをレポジトリに混入させない
 // フィルタリング操作などなど
-func (c Consumers) ActiveConsumer() Consumers {
+func (c Consumers) activeConsumer() Consumers {
 	resp := make([]Consumer, 0, len(c))
 	for _, v := range c {
 		if v.Active {
@@ -25,7 +32,7 @@ func (c Consumers) ActiveConsumer() Consumers {
 }
 
 // 戻り値を `Consumers` で揃えておくことでメソッドチェーンが作れる
-func (c Consumers) Exipres(end time.Time) Consumers {
+func (c Consumers) expires(end time.Time) Consumers {
 	resp := make(Consumers, 0, len(c))
 	for _, v := range c {
 		if end.After(v.ExpiredAt) {
@@ -35,14 +42,22 @@ func (c Consumers) Exipres(end time.Time) Consumers {
 	return resp
 }
 
-func exampleActiveConsumer() {
+// see: https://pkg.go.dev/slices#SortFunc for impl
+func (c Consumers) sortByExpiredAt() Consumers {
+	slices.SortFunc(c, func(a, b Consumer) int {
+		return a.ExpiredAt.Compare(b.ExpiredAt)
+	})
+	return c
+}
+
+func ExampleActiveConsumer() {
 	consumers, err := GetConsumers()
 	if err != nil {
 		// error handling
 	}
 
-	activeConsumers := consumers.ActiveConsumer().Exipres(time.Now().AddDate(0, 0, -1).Truncate(24 * time.Hour))
-	println(len(activeConsumers))
+	requiredFollows := consumers.RequiredFollows()
+	println(len(requiredFollows))
 }
 
 func GetConsumers() (Consumers, error) {
