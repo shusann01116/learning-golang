@@ -4,6 +4,7 @@ import (
 	"log"
 	"reflect"
 	"strconv"
+	"unsafe"
 )
 
 type Person struct {
@@ -13,18 +14,21 @@ type Person struct {
 
 type MapStruct struct {
 	Str     string  `map:"str"`
-	StrPtr  *string `map:"str"`
+	StrPtr  *string `map:"strPtr"`
 	Bool    bool    `map:"bool"`
-	BoolPtr *bool   `map:"bool"`
+	BoolPtr *bool   `map:"boolPtr"`
 	Int     int     `map:"int"`
-	IntPtr  *int    `map:"int"`
+	IntPtr  *int    `map:"intPtr"`
 }
 
 func mapStruct() {
 	src := map[string]string{
-		"str":  "string data",
-		"bool": "true",
-		"int":  "12345",
+		"str":     "string data",
+		"strPtr":  "string data",
+		"bool":    "true",
+		"boolPtr": "true",
+		"int":     "12345",
+		"intPtr":  "12345",
 	}
 	var ms MapStruct
 	Decode(&ms, src)
@@ -110,6 +114,74 @@ func decode(e reflect.Value, src map[string]string) error {
 			} else {
 				e.Field(i).SetInt(n64)
 			}
+		}
+	}
+	return nil
+}
+
+func Encode(target map[string]string, src interface{}) error {
+	v := reflect.ValueOf(src)
+	e := v.Elem()
+	t := e.Type()
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+
+		if f.Anonymous {
+			Encode(target, e.Field(i).Addr().Interface())
+			continue
+		}
+
+		key := f.Tag.Get("map")
+		if key == "" {
+			key = f.Name
+		}
+
+		if f.Type.Kind() == reflect.Struct {
+			Encode(target, e.Field(i).Addr().Interface())
+			continue
+		}
+
+		var k reflect.Kind
+		var isP bool
+		if f.Type.Kind() != reflect.Ptr {
+			k = f.Type.Kind()
+		} else {
+			k = f.Type.Elem().Kind()
+			isP = true
+			if k == reflect.Ptr {
+				continue
+			}
+		}
+
+		switch k {
+		case reflect.String:
+			if isP {
+				if e.Field(i).Pointer() != 0 {
+					target[key] = *(*string)(unsafe.Pointer(e.Field(i).Pointer()))
+				}
+			} else {
+				target[key] = e.Field(i).String()
+			}
+		case reflect.Bool:
+			var b bool
+			if isP {
+				if e.Field(i).Pointer() != 0 {
+					b = *(*bool)(unsafe.Pointer(e.Field(i).Pointer()))
+				}
+			} else {
+				b = e.Field(i).Bool()
+			}
+			target[key] = strconv.FormatBool(b)
+		case reflect.Int:
+			var n int64
+			if isP {
+				if e.Field(i).Pointer() != 0 {
+					n = int64(*(*int)(unsafe.Pointer(e.Field(i).Pointer())))
+				}
+			} else {
+				n = e.Field(i).Int()
+			}
+			target[key] = strconv.FormatInt(n, 10)
 		}
 	}
 	return nil
