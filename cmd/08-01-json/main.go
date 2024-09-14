@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"log/slog"
 )
 
 type ID string
@@ -14,6 +15,7 @@ type MyJSONType struct {
 
 func main() {
 	serialize()
+	deserialize()
 }
 
 func serialize() {
@@ -28,4 +30,17 @@ func serialize() {
 	}
 
 	log.Print(string(rawstr))
+}
+
+func deserialize() {
+	rawStr := `{
+	"id": "oooo",
+	"name": "John Doh",
+}`
+	var result MyJSONType
+	if err := json.Unmarshal([]byte(rawStr), &result); err != nil {
+		panic(err)
+	}
+
+	slog.Info(rawStr)
 }
