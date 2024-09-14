@@ -3,6 +3,7 @@ package conndb
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -64,4 +65,52 @@ func QueryUsers() []*User {
 		log.Fatalf("scan uses: %v", err)
 	}
 	return users
+}
+
+func Transaction() error {
+	Connect()
+
+	ctx := context.TODO()
+	tx, err := DB.Begin()
+	if err != nil {
+		return fmt.Errorf("begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	_, err = tx.ExecContext(ctx, "UPDATE users SET user_name = $1 WHERE user_id = $2", "New Name", "1")
+	if err != nil {
+		return fmt.Errorf("update user: %w", err)
+	}
+
+	return tx.Commit()
+}
+
+type txAdmin struct {
+	db *sql.DB
+}
+
+type Service struct {
+	txAdmin
+}
+
+func NewService(db *sql.DB) *Service {
+	return &Service{
+		txAdmin: txAdmin{
+			db: db,
+		},
+	}
+}
+
+func (t *txAdmin) Transaction(ctx context.Context, f func(ctx context.Context, tx *sql.Tx) error) error {
+	tx, err := t.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	if err := f(ctx, tx); err != nil {
+		return fmt.Errorf("transaction query failed: %w", err)
+	}
+
+	return tx.Commit()
 }
