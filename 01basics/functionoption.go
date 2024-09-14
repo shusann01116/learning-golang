@@ -1,6 +1,9 @@
 package basics
 
-import "fmt"
+import (
+	"fmt"
+	"log/slog"
+)
 
 type Portion int
 
@@ -25,7 +28,7 @@ func NewUdon1(p Portion, aburaage bool, ebiten uint) *Udon {
 	}
 }
 
-var tempuraUdon = NewUdon1(Large, false, 2)
+var TempuraUdon = NewUdon1(Large, false, 2)
 
 // Option パターン
 // オプション引数を使ったパターン Fill Struct で構造体のメンバーを埋めることができるので
@@ -46,31 +49,31 @@ func NewUdon2(o Option) *Udon {
 
 // builder パターン
 // IDE による補完が効くため生産性がよいパターン
-type fluentOpt struct {
+type FluentOpt struct {
 	men      Portion
 	aburaage bool
 	ebiten   uint
 }
 
-func NewUdon3(p Portion) *fluentOpt {
-	return &fluentOpt{
+func NewUdon3(p Portion) *FluentOpt {
+	return &FluentOpt{
 		men:      p,
 		aburaage: false,
 		ebiten:   1,
 	}
 }
 
-func (o *fluentOpt) Aburaage() *fluentOpt {
+func (o *FluentOpt) Aburaage() *FluentOpt {
 	o.aburaage = true
 	return o
 }
 
-func (o *fluentOpt) Ebiten(n uint) *fluentOpt {
+func (o *FluentOpt) Ebiten(n uint) *FluentOpt {
 	o.ebiten = n
 	return o
 }
 
-func (o *fluentOpt) Order() *Udon {
+func (o *FluentOpt) Order() *Udon {
 	return &Udon{
 		men:      o.men,
 		aburaage: o.aburaage,
@@ -78,9 +81,9 @@ func (o *fluentOpt) Order() *Udon {
 	}
 }
 
-func useFluentInterface() {
+func UseFluentInterface() {
 	oomoriKitsune := NewUdon3(Large).Aburaage().Order()
-	fmt.Println(oomoriKitsune)
+	slog.Info(fmt.Sprint(oomoriKitsune))
 }
 
 // Functiona Option パターン
@@ -88,7 +91,11 @@ func useFluentInterface() {
 type OptFunc func(r *Udon)
 
 func NewUdon4(opts ...OptFunc) *Udon {
-	r := &Udon{}
+	r := &Udon{
+		men:      0,
+		aburaage: false,
+		ebiten:   0,
+	}
 	for _, opt := range opts {
 		opt(r)
 	}

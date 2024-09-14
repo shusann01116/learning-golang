@@ -3,14 +3,14 @@ package basics
 import "errors"
 
 // これは厳密な実装
-type errDataBase int
+type DataBaseError int
 
-func (e errDataBase) Error() string {
+func (e DataBaseError) Error() string {
 	return "Database Error"
 }
 
 const (
-	ErrDataBase errDataBase = 0
+	ErrDataBase DataBaseError = 0
 )
 
 // var を使った気軽な定義

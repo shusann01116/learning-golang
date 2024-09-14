@@ -5,6 +5,7 @@ import (
 	"runtime/debug"
 )
 
+//nolint:forbidigo
 func main() {
 	info, ok := debug.ReadBuildInfo()
 	if !ok {

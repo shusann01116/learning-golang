@@ -2,6 +2,7 @@ package main
 
 import "fmt"
 
+//nolint:forbidigo
 func main() {
 	// allocate actual memory
 	s1 := make([]int, 1000)

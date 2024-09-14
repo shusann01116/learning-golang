@@ -20,10 +20,12 @@ func (o OreillyBook) GetOreillyURL() string {
 	return "https://www.oreilly.co.jp/books/" + o.ISBN13 + "/"
 }
 
-func usageExample() {
+//nolint:forbidigo
+func UsageExample() {
 	ob := OreillyBook{
 		ISBN13: "9784873119038",
 		Book: Book{
+			ISBN:  "",
 			Title: "Real World https",
 		},
 	}

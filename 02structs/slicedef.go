@@ -1,7 +1,9 @@
 package structs
 
 import (
+	"log/slog"
 	"slices"
+	"strconv"
 	"time"
 )
 
@@ -52,12 +54,12 @@ func (c Consumers) sortByExpiredAt() Consumers {
 
 func ExampleActiveConsumer() {
 	consumers, err := GetConsumers()
-	if err != nil {
+	if err != nil { //nolint:staticcheck,revive
 		// error handling
 	}
 
 	requiredFollows := consumers.RequiredFollows()
-	println(len(requiredFollows))
+	slog.Info(strconv.Itoa(len(requiredFollows)))
 }
 
 func GetConsumers() (Consumers, error) {

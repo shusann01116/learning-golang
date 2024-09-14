@@ -7,6 +7,7 @@ import (
 
 type TypeAssersionContext string
 
+//nolint:ineffassign,wastedassign,gosmopolitan
 func anyfunc() {
 	var v any = "何でも入る変数"
 	v = 1
@@ -43,6 +44,6 @@ func typeAssertion() {
 	case complex128:
 		log.Printf("complex\n")
 	default:
-		log.Printf("unkown number: %v\n", v)
+		log.Printf("unknown number: %v\n", v)
 	}
 }

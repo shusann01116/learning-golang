@@ -1,7 +1,7 @@
 package morestructs
 
 type Struct[T any] struct {
-	t T
+	T T
 }
 
 // 03morestructs/generics.go:9:26: syntax error: method must have no type parameters

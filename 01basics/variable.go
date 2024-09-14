@@ -1,4 +1,4 @@
 package basics
 
-var vara = 1
-var varb int32 = 1 + 100
+var VarA = 1
+var VarB int32 = 1 + 100

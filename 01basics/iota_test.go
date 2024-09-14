@@ -7,7 +7,7 @@ import (
 func TestCaroption(t *testing.T) {
 	t.Parallel()
 
-	var o CarOption
+	var o CarOption //nolint:gosimple
 	o = SunRoof | HeatedSeat
 
 	if o&SunRoof == 0 {

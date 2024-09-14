@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+//nolint:forbidigo
 func main() {
 	fmt.Println("Start 3 sec sleep")
 	time.Sleep(3 * time.Second)

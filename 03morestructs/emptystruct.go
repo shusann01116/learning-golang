@@ -1,18 +1,18 @@
 package morestructs
 
 import (
-	"fmt"
+	"log/slog"
 	"time"
 )
 
-func example() {
+func Example() {
 	wait := make(chan struct{})
 	go func() {
 		time.Sleep(3 * time.Second)
 		wait <- struct{}{}
 	}()
 
-	fmt.Println("wait for 3 sec in go routine")
+	slog.Info("wait for 3 sec in go routine")
 	<-wait
-	fmt.Println("3 sec elappsed")
+	slog.Info("3 sec elappsed")
 }

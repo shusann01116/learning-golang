@@ -9,7 +9,7 @@ type MyStruct struct {
 	Value *big.Int
 }
 
-func example2() {
+func Example2() {
 	// declare `sync.Pool` struct
 	pool := &sync.Pool{
 		New: func() any {

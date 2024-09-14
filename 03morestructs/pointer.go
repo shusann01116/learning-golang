@@ -7,6 +7,7 @@ type NoCopyStruct struct {
 
 func NewNoCopyStruct(value string) *NoCopyStruct {
 	r := &NoCopyStruct{
+		self:  nil,
 		Value: &value,
 	}
 	r.self = r
@@ -23,6 +24,7 @@ func (n *NoCopyStruct) String() string {
 func (n *NoCopyStruct) Copy() *NoCopyStruct {
 	str := *n.Value
 	p2 := &NoCopyStruct{
+		self:  nil,
 		Value: &str,
 	}
 	p2.self = p2

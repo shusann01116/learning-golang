@@ -1,5 +1,6 @@
 package basics
 
+//nolint:unused
 const (
 	a = 1
 	b = 1 + 2

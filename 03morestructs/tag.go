@@ -21,7 +21,7 @@ type MapStruct struct {
 	IntPtr  *int    `map:"intPtr"`
 }
 
-func mapStruct() {
+func MapStructSample() {
 	src := map[string]string{
 		"str":     "string data",
 		"strPtr":  "string data",
@@ -31,7 +31,7 @@ func mapStruct() {
 		"intPtr":  "12345",
 	}
 	var ms MapStruct
-	Decode(&ms, src)
+	_ = Decode(&ms, src)
 	log.Println(ms)
 }
 
@@ -41,9 +41,10 @@ func Decode(target *MapStruct, src map[string]string) error {
 	return decode(e, src)
 }
 
+//nolint:all
 func decode(e reflect.Value, src map[string]string) error {
 	t := e.Type()
-	for i := 0; i < t.NumField(); i++ {
+	for i := range t.NumField() {
 		f := t.Field(i)
 		// 埋め込まれた構造体は再帰処理
 		if f.Anonymous {
@@ -114,20 +115,23 @@ func decode(e reflect.Value, src map[string]string) error {
 			} else {
 				e.Field(i).SetInt(n64)
 			}
+		default:
+			panic("not implemented")
 		}
 	}
 	return nil
 }
 
+//nolint:all
 func Encode(target map[string]string, src interface{}) error {
 	v := reflect.ValueOf(src)
 	e := v.Elem()
 	t := e.Type()
-	for i := 0; i < t.NumField(); i++ {
+	for i := range t.NumField() {
 		f := t.Field(i)
 
 		if f.Anonymous {
-			Encode(target, e.Field(i).Addr().Interface())
+			_ = Encode(target, e.Field(i).Addr().Interface())
 			continue
 		}
 
@@ -137,7 +141,7 @@ func Encode(target map[string]string, src interface{}) error {
 		}
 
 		if f.Type.Kind() == reflect.Struct {
-			Encode(target, e.Field(i).Addr().Interface())
+			_ = Encode(target, e.Field(i).Addr().Interface())
 			continue
 		}
 
@@ -182,6 +186,8 @@ func Encode(target map[string]string, src interface{}) error {
 				n = e.Field(i).Int()
 			}
 			target[key] = strconv.FormatInt(n, 10)
+		default:
+			panic("not implemented")
 		}
 	}
 	return nil
