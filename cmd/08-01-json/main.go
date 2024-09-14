@@ -35,7 +35,7 @@ func serialize() {
 func deserialize() {
 	rawStr := `{
 	"id": "oooo",
-	"name": "John Doh",
+	"name": "John Doh"
 }`
 	var result MyJSONType
 	if err := json.Unmarshal([]byte(rawStr), &result); err != nil {
