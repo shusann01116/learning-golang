@@ -22,7 +22,9 @@ tidy: install
 fmt: install
 	go fmt ./...
 
-all: lint $(TARGET_DIRS)
+all: lint build-all
+
+build: $(TARGET_DIRS)
 
 .PHONY: $(TARGET_DIRS)
 $(TARGET_DIRS):
